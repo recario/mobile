@@ -23,6 +23,12 @@ export const styles = StyleSheet.create({
     zIndex: 10,
     margin: 0
   },
+  headerBackground: {
+    width: '100%',
+    color: '#fff',
+    position: 'absolute',
+    zIndex: 10,
+  },
   sourceContainer: {
     margin: 12,
     marginBottom: 36,

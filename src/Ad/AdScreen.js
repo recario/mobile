@@ -16,6 +16,8 @@ import { Text,
   Right
 } from 'native-base';
 
+import LinearGradient from 'react-native-linear-gradient';
+
 import { loadAd } from '../actions/adsActions';
 
 import ImageGallery from './ImageGallery';
@@ -56,19 +58,33 @@ export default class AdScreen extends React.PureComponent {
     }
 
     return (
+<<<<<<< HEAD
       <Container style={styles.mainContainer}>
         <View style={styles.headerBackground}>
           <Header iosBarStyle="light-content" style={styles.header}>
+=======
+      <Container>
+        <LinearGradient colors={['rgba(0,0,0,1)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,0.6)', 'rgba(0,0,0,0)']} style={styles.headerBackground}>
+          <Header noShadow iosBarStyle={"light-content"} style={styles.header}>
+>>>>>>> Gradient WIP
             <Left>
               <Icon name='chevron-back-outline' onPress={NavigationService.popToTop} />
             </Left>
             <Right style={styles.actionButtonsContainer}>
               <Icon onPress={this.shareAction} name='share-outline' />
+<<<<<<< HEAD
               <Icon onPress={this.favAction} style={colorStyle} name={ad.is_favorite ? 'heart' : 'heart-outline'} />
             </Right>
           </Header>
         </View>
         <ScrollView refreshControl={refreshControl} showsVerticalScrollIndicator={false}>
+=======
+              <Icon onPress={this.favAction} style={[styles.icon, colorStyle]} name={ad.is_favorite ? 'heart' : 'heart-outline'} />
+            </Right>
+          </Header>
+        </LinearGradient>
+        <ScrollView style={styles.mainContainer} refreshControl={refreshControl} showsVerticalScrollIndicator={false}>
+>>>>>>> Gradient WIP
           <ImageGallery ad={ad} />
           <View style={styles.contentContainer}>
             <Text style={styles.title}>{ad.title}</Text>
