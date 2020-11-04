@@ -47,11 +47,6 @@ export default function userReducer(state = initialState, action = {}) {
         ...state,
         contactsProcessed: true
       }
-    case ActionTypes.SET_CURRENT_CHAT:
-      return {
-        ...state,
-        currentChatId: action.chatRoomId
-      }
     case ActionTypes.UPDATE_UNREAD_MESSAGES_COUNT:
       return {
         ...state,

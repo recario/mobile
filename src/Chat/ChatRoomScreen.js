@@ -26,7 +26,7 @@ import { serverChannel } from '../services/ServerChannel';
 
 import ru from 'dayjs/locale/ru';
 
-function ChatRoomScreen({ user, chat, onSend, onDelete, navigation, getMessages, setCurrentChat, removeCurrentChat }) {
+function ChatRoomScreen({ user, chat, messages, onSend, onDelete, navigation, getMessages, setCurrentChat, removeCurrentChat }) {
   if (!chat?.id) { return <SpinnerScreen /> }
 
   useEffect( () => {
@@ -58,6 +58,7 @@ function ChatRoomScreen({ user, chat, onSend, onDelete, navigation, getMessages,
   const onConnect = () => {
     setCurrentChat(chat.id);
     serverChannel.connectToChatRoomChannel(chat.id);
+    getMessages(chat);
   }
   const onDisconnect = () => {
     removeCurrentChat();
@@ -80,7 +81,7 @@ function ChatRoomScreen({ user, chat, onSend, onDelete, navigation, getMessages,
   return (
     <Container style={styles.mainContainer}>
       <GiftedChat
-        messages={chat.messages}
+        messages={messages}
         onLoadEarlier={() => getMessages(chat, chat.messages.length)}
         infiniteScroll
         loadEarlier={chat.synced && !chat.lastLoaded}
@@ -107,6 +108,7 @@ function mapStateToProps(state, ownProps) {
   return {
     chat: chat,
     user: state.user,
+    messages: state.currentChat.messages,
   };
 }
 

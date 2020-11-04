@@ -14,6 +14,7 @@ import {
   Icon,
   ActionSheet,
   Button,
+  Spinner,
 } from 'native-base';
 
 import { activeColor, mainColor } from '../Colors';
@@ -78,10 +79,11 @@ function ChatRoomsSettingsScreen({ chat, currentChat, navigation, addUserToChat,
   return(
     <Container>
       <Image source={{uri: chat.photo}} style={styles.adPhoto}/>
-      <FlatList data={toDisplay}
-                refreshing={isLoadingSettings}
-                keyExtractor={keyExtractor}
-                renderItem={renderItem} />
+      {isLoadingSettings ? <Spinner color={activeColor} />
+                         : <FlatList data={toDisplay}
+                                     refreshing={isLoadingSettings}
+                                     keyExtractor={keyExtractor}
+                                     renderItem={renderItem} />}
       {modalVisible && <InvitationModal friend={friendToInvite} onClose={closeModal} onSubmit={addUser}/>}
     </Container>
   );

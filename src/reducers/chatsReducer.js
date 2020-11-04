@@ -29,11 +29,6 @@ export default function chatsReducer(state = initialState, action = {}) {
         ...state,
         list: newChatList(state.list, action.chat, false, true)
       }
-    case ActionTypes.SYNC_MESSAGES_SUCCESS:
-      return {
-        ...state,
-        list: newChatList(state.list, action.chat, true, false, true)
-      }
     case ActionTypes.POST_MESSAGE_SUCCESS:
       return {
         ...state,

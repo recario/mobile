@@ -1,11 +1,11 @@
 import * as ActionTypes from '../actions/actionTypes';
 
+import { mergeArraysKeepNew } from '../Utils';
+
 const initialState = {
   friends: [],
   isLoadingSettings: false,
-  inviteModalOpened: false,
-  isInvitingFriendLoading: false,
-  friendToInvite: {},
+  messages: []
 }
 
 export default function currentChatReducer(state = initialState, action = {}) {
@@ -40,6 +40,51 @@ export default function currentChatReducer(state = initialState, action = {}) {
         inviteModalOpened: true,
         isInvitingFriendLoading: false
       }
+    case ActionTypes.SET_CURRENT_CHAT:
+      return {
+        ...state,
+        id: action.chatRoomId
+      }
+    case ActionTypes.ADD_MESSAGES:
+      return {
+        ...state,
+        messages: action.messages
+      }
+    case ActionTypes.POST_MESSAGE:
+      return {
+        ...state,
+        messages: mergeArraysKeepNew([...state.messages, ...action.chat.messages], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+      }
+    case ActionTypes.POST_MESSAGE_SUCCESS:
+      return {
+        ...state,
+        messages: mergeArraysKeepNew([...state.messages, ...action.chat.messages], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+      }
+    case ActionTypes.SYNC_MESSAGES_SUCCESS:
+      return {
+        ...state,
+        messages: mergeArraysKeepNew([...state.messages, ...action.chat.messages], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+      }
+    case ActionTypes.MESSAGE_WAS_DELETED:
+      if (state.id !== action.chat_room_id) {
+        return state;
+      } else {
+        return {
+          ...state,
+          messages: state.messages.filter(m => m._id !== action.id)
+        }
+      }
+    case ActionTypes.MESSAGE_IS_DELETING:
+
+      if (action.message.chat_id !== state.id) {
+        return state;
+      } else {
+        return {
+          ...state,
+          messages: state.messages.map(m => m._id === action.message._id ? {...m, pending: true} : m)
+        }
+      }
+
     default:
       return state;
   }

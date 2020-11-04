@@ -86,7 +86,7 @@ export function leaveChat(chatRoomId) {
 
 export function newMessage(chat, myMessage = false) {
   return (dispatch, getState) => {
-    const currentChatId = getState().user.currentChatId;
+    const currentChatId = getState().currentChat.id;
     const currentUserId = getState().user._id;
     if (currentChatId === chat.id) {
       if (chat.messages[0].user._id !== currentUserId) {
