@@ -1,6 +1,9 @@
 import React from 'react';
 import { Animated, TouchableOpacity, StyleSheet } from 'react-native';
-import { Icon, Text } from 'native-base';
+import { Icon, Text, Thumbnail } from 'native-base';
+import { darkColor, lightColor, mainColor } from './Colors';
+
+import { FlingGestureHandler, Directions } from 'react-native-gesture-handler';
 
 export default class Notification extends React.PureComponent {
   constructor(props) {
@@ -30,6 +33,7 @@ export default class Notification extends React.PureComponent {
     Animated.timing(this.animatedPosition, {
       toValue: 25,
       duration: 200,
+      useNativeDriver: false,
     }).start();
 
     if (timeout !== 0) {
@@ -41,6 +45,7 @@ export default class Notification extends React.PureComponent {
     Animated.timing(this.animatedPosition, {
       toValue: -100,
       duration: 200,
+      useNativeDriver: false,
     }).start(() => {
       this.setState({ show: false });
     });
@@ -58,33 +63,37 @@ export default class Notification extends React.PureComponent {
 
   render() {
     const { show, message } = this.state;
+    const text = message.message ? message.message : message;
+
+    if (!show) { return null };
 
     return (
-      show && (
+      <FlingGestureHandler direction={Directions.UP} onHandlerStateChange={this.hide} >
         <Animated.View style={[styles.notificationWrapper, { top: this.animatedPosition }]}>
-          <TouchableOpacity onPress={this.onBodyPress} style={styles.notificationBody}>
-            <Text style={styles.notificationBodyText}>{message.message ? message.message : message}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.hide}>
-            <Icon name="ios-close" style={styles.close} />
+          {message.photo && <Thumbnail style={styles.messagePhoto} source={{ uri: message.photo }}/>}
+          <TouchableOpacity activeOpacity={1} onPress={this.onBodyPress} style={styles.notificationBody}>
+            <Text numberOfLines={2} style={styles.notificationBodyText}>
+              {message.name && <Text style={{color: lightColor}}>{message.name}{"\n"}</Text>}
+              {text.replace(/\n/g, ' ')}
+            </Text>
           </TouchableOpacity>
         </Animated.View>
-      )
+      </FlingGestureHandler>
     );
   }
 }
 
 const styles = StyleSheet.create({
   notificationWrapper: {
-    marginTop: 50,
+    marginTop: 20,
     position: 'absolute',
-    left: 16,
-    backgroundColor: '#eee',
+    backgroundColor: '#222',
     zIndex: 100000,
     width: '90%',
-    paddingHorizontal: 16,
-    paddingVertical: 21,
-    borderRadius: 5,
+    alignSelf: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -96,9 +105,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   notificationBodyText: {
-    color: '#111111',
-    paddingRight: 12,
-    textAlign: 'justify',
+    color: lightColor,
+    fontSize: 14,
+    flex: 1,
   },
-  close: { color: '#111111' },
+  close: {
+    color: lightColor,
+    fontSize: 18,
+  },
+  messagePhoto: {
+    width: 36,
+    height: 36,
+    marginRight: 12,
+  },
 });

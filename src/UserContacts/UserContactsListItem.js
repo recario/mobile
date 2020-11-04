@@ -18,7 +18,7 @@ export default class UserContactsListItem extends React.PureComponent {
     },
     buttonIndex => {
       switch(buttonIndex) {
-        case 0: return this.props.filterByContactDispatched(this.props.contact.name)
+        case 0: return this.props.filterByContact(this.props.contact.name)
         case 1: return this.sendInvitation()
       }
     }

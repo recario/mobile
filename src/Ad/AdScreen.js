@@ -38,9 +38,9 @@ export default class AdScreen extends React.PureComponent {
   }
 
   favAction = () => {
-    const { ad, likeAdDispatched, unlikeAdDispatched } = this.props;
+    const { ad, likeAd, unlikeAd } = this.props;
 
-    ad.is_favorite ? unlikeAdDispatched(ad) : likeAdDispatched(ad)
+    ad.is_favorite ? unlikeAd(ad) : likeAd(ad)
   }
 
   favIconActiveStyles = [styles.icon, styles.activeColor]
@@ -87,7 +87,7 @@ export default class AdScreen extends React.PureComponent {
               </View>
             )}
 
-            {currentAdFriends && currentAdFriends.length > 0 &&
+            {typeof currentAdFriends !== 'undefined' &&
                 (askFriendsIsLoading ?
                   <Spinner color={activeColor} /> :
                   <AskFriend ad={ad} currentAdFriends={currentAdFriends} />

@@ -18,7 +18,7 @@ class FavoriteAdsScreen extends React.PureComponent {
   }
 
   onAdOpened = (ad) => {
-    const { navigation, loadAdDispatched } = this.props;
+    const { navigation, loadAd } = this.props;
     navigation.navigate('FavorteAdScreen', { id: ad.id });
   }
 
@@ -36,7 +36,7 @@ class FavoriteAdsScreen extends React.PureComponent {
   )
 
   render() {
-    const { ads, loadMoreAdsDispatched, isLoading, onRefreshDispatched } = this.props;
+    const { ads, loadMoreAds, isLoading, onRefresh } = this.props;
 
     return (
       <Container>
@@ -50,8 +50,8 @@ class FavoriteAdsScreen extends React.PureComponent {
         </Header>
         {<AdsList ads={ads}
                   isLoading={isLoading}
-                  onRefresh={onRefreshDispatched}
-                  loadMoreAdsDispatched={loadMoreAdsDispatched}
+                  onRefresh={onRefresh}
+                  loadMoreAds={loadMoreAds}
                   onAdOpened={this.onAdOpened}/>}
       </Container>
     );
@@ -67,9 +67,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadMoreAdsDispatched: () => dispatch(loadMoreAds()),
-    loadAdDispatched: (id) => dispatch(loadAd(id)),
-    onRefreshDispatched: (id, nav) => dispatch(getAll()),
+    loadMoreAds: () => dispatch(loadMoreAds()),
+    loadAd: (id) => dispatch(loadAd(id)),
+    onRefresh: (id, nav) => dispatch(getAll()),
   };
 }
 

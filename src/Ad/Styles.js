@@ -13,10 +13,11 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 0,
     paddingTop: 0,
     padding: 0,
-    margin: 0
+    margin: 0,
+    width: '100%',
   },
   headerBackground: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.0)',
     width: '100%',
     color: '#fff',
     position: 'absolute',
@@ -87,7 +88,8 @@ export const styles = StyleSheet.create({
     backgroundColor: darkColor
   },
   image: {
-    height: 350
+    height: 350,
+    opacity: 0.75,
   },
   imageGalleryBadgesContainer: {
     width: '100%',

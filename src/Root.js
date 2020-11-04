@@ -25,13 +25,14 @@ import { getAll as getMyAds } from './MyAds/myAdsActions';
 import { getAll as getVisitedAds } from './VisitedAds/visitedAdsActions';
 import { getAll as getFavoriteAds } from './FavoriteAds/favoriteAdsActions';
 import { getProfile } from './Profile/profileActions';
+import { getChatRooms, newMessage, readUpdate, deleteMessageFinished } from './Chat/chatActions';
 
 import { activeColor } from './Colors';
 
 import { getAccessToken, getWizardDone } from './AsyncStorage';
 
 import API from './services/API';
-import ServerChannel from './services/ServerChannel';
+import { serverChannel } from './services/ServerChannel';
 
 class Root extends React.Component {
   constructor(props) {
@@ -40,27 +41,45 @@ class Root extends React.Component {
   }
 
   onContactsProcessed = () => {
-    const { updateContactsFinishedDispatched, getFeedDispatched, getContactsDispatched, getProfileDispatched } = this.props;
+    const {
+      updateContactsFinished,
+      getFeed,
+      getContacts,
+      getProfile
+    } = this.props;
 
-    updateContactsFinishedDispatched();
-    getFeedDispatched();
-    getContactsDispatched();
-    getProfileDispatched();
+    updateContactsFinished();
+    getFeed();
+    getContacts();
+    getProfile();
   }
 
-  serverChannel = new ServerChannel({onContactsProcessed: this.onContactsProcessed})
+  userChannelCallbacks = {
+    onContactsProcessed: this.onContactsProcessed,
+    onNewMessage: this.props.newMessage,
+    onReadUpdate: this.props.readUpdate,
+    onUnreadMessage: this.props.updateUnreadMessagesCount,
+    onDeleteMessage: this.props.deleteMessage,
+  }
 
   refreshApp = () => {
-    const { accessToken, tryUpdateContactsDispatched, updateFilterValuesDispatched } = this.props;
+    const {
+      accessToken,
+      tryUpdateContacts,
+      updateFilterValues,
+      getChatRooms,
+      newMessage
+    } = this.props;
 
     if (AppState.currentState === 'active') {
       if (!accessToken) { return; }
     } else {
-      this.serverChannel.disconnect();
+      serverChannel.disconnect();
       return;
     }
 
-    this.serverChannel.connect(accessToken);
+    serverChannel.authenticate(accessToken);
+    serverChannel.connectToUsersChannel(this.userChannelCallbacks);
 
     PushNotification.checkPermissions(permissions => {
       if (permissions.alert || permissions.badge || permissions.sound) {
@@ -68,12 +87,18 @@ class Root extends React.Component {
       }
     });
 
-    updateFilterValuesDispatched();
-    tryUpdateContactsDispatched();
+    updateFilterValues();
+    getChatRooms();
+    tryUpdateContacts();
   };
 
   async componentDidMount() {
-    const { accessToken, setCachedToken } = this.props;
+    const {
+      accessToken,
+      setCachedToken,
+      setWizardDone,
+      newMessage
+    } = this.props;
 
     let t;
 
@@ -85,20 +110,34 @@ class Root extends React.Component {
     AppState.addEventListener('change', this.refreshApp);
 
     getWizardDone().then(done => {
-      if (!!done) { this.props.setWizardDoneDispatched(); }
+      if (!!done) { setWizardDone(); }
       this.setState({ wizardLoading: false });
     });
 
-    this.serverChannel.connect(t);
+    serverChannel.authenticate(t);
+    serverChannel.connectToUsersChannel(this.userChannelCallbacks);
   }
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.refreshApp);
-    this.serverChannel.disconnect();
+    serverChannel.disconnect();
   }
 
   render() {
-    const { isLoading, accessToken, wizardDone, getFeedDispatched, getContactsDispatched, getMyAdsDispatched, getVisitedAdsDispatched, getFavoriteAdsDispatched, getProfileDispatched } = this.props;
+    const {
+      isLoading,
+      accessToken,
+      wizardDone,
+      getFeed,
+      getContacts,
+      getMyAds,
+      getVisitedAds,
+      getFavoriteAds,
+      getProfile,
+      getChatRooms
+    } = this.props;
+
+    const appNavigatorRef = (navigatorRef) => NavigationService.setTopLevelNavigator(navigatorRef);
 
     if (isLoading || this.state.wizardLoading) {
       return (
@@ -113,13 +152,14 @@ class Root extends React.Component {
     if (accessToken) {
       this.refreshApp();
 
-      getFeedDispatched();
-      getContactsDispatched();
-      getMyAdsDispatched();
-      getVisitedAdsDispatched();
-      getFavoriteAdsDispatched();
-      getProfileDispatched();
-      return <AppNavigator uriPrefix="recarioapp://" ref={navigatorRef => {NavigationService.setTopLevelNavigator(navigatorRef)}}/>;
+      getChatRooms();
+      getFeed();
+      getContacts();
+      getMyAds();
+      getVisitedAds();
+      getFavoriteAds();
+      getProfile();
+      return <AppNavigator uriPrefix="recarioapp://" ref={appNavigatorRef}/>;
     } else {
       return wizardDone ? <LoginNavigator /> : <WizardNavigator />;
     }
@@ -140,16 +180,21 @@ function mapDispatchToProps(dispatch) {
       API.setAccessToken(token);
       dispatch({ type: ActionTypes.SIGN_IN_SUCCESS, token: token });
     },
-    getContactsDispatched: () => dispatch(getUserContacts()),
-    getFeedDispatched: () => dispatch(getFeed()),
-    getMyAdsDispatched: () => dispatch(getMyAds()),
-    getVisitedAdsDispatched: () => dispatch(getVisitedAds()),
-    getFavoriteAdsDispatched: () => dispatch(getFavoriteAds()),
-    getProfileDispatched: () => dispatch(getProfile()),
-    setWizardDoneDispatched: () => dispatch(setWizardDone()),
-    tryUpdateContactsDispatched: () => dispatch(tryUpdateContacts()),
-    updateFilterValuesDispatched: () => dispatch(updateFilterValues()),
-    updateContactsFinishedDispatched: () => dispatch({ type: ActionTypes.UPDATE_CONTACTS_FINISHED })
+    getChatRooms: () => dispatch(getChatRooms()),
+    getContacts: () => dispatch(getUserContacts()),
+    getFeed: () => dispatch(getFeed()),
+    getMyAds: () => dispatch(getMyAds()),
+    getVisitedAds: () => dispatch(getVisitedAds()),
+    getFavoriteAds: () => dispatch(getFavoriteAds()),
+    getProfile: () => dispatch(getProfile()),
+    setWizardDone: () => dispatch(setWizardDone()),
+    tryUpdateContacts: () => dispatch(tryUpdateContacts()),
+    updateFilterValues: () => dispatch(updateFilterValues()),
+    updateContactsFinished: () => dispatch({ type: ActionTypes.UPDATE_CONTACTS_FINISHED }),
+    newMessage: (chat, myMessage) => dispatch(newMessage(chat, myMessage)),
+    readUpdate: (chat) => dispatch(readUpdate(chat)),
+    updateUnreadMessagesCount: (count) => dispatch({ type: ActionTypes.UPDATE_UNREAD_MESSAGES_COUNT, count: count }),
+    deleteMessage: (id, chat_room_id, updated_at) => dispatch(deleteMessageFinished(id, chat_room_id, updated_at)),
   };
 }
 

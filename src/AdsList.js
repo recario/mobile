@@ -13,7 +13,7 @@ class AdsList extends React.PureComponent {
   _keyExtractor = item => item.id.toString();
 
   _onEndReached = async () => {
-    this.props.loadMoreAdsDispatched();
+    this.props.loadMoreAds();
   }
 
   // https://github.com/facebook/react-native/issues/26610

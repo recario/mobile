@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Container, Header, Item, Icon, Input, Text, Fab } from 'native-base';
-import { SafeAreaView, StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 
 import UserContactsList from './UserContactsList';
 
@@ -19,13 +19,13 @@ class UserContactsScreen extends React.PureComponent {
     return({ header: () => null });
   }
 
-  resetQuery = () => this.props.updateQueryDispatched('')
+  resetQuery = () => this.props.updateQuery('')
 
   render() {
-    const { userContacts, isLoading, query, updateQueryDispatched, loadMoreUserContactsDispatched, onRefreshDispatched, filterByContactDispatched } = this.props;
+    const { userContacts, isLoading, query, updateQuery, loadMoreUserContacts, onRefresh, filterByContact } = this.props;
     const onUpdateQuery = (query) => {
       clearTimeout(this.typingTimer);
-      this.typingTimer = setTimeout(() => updateQueryDispatched(query), 200);
+      this.typingTimer = setTimeout(() => updateQuery(query), 200);
     }
 
     return (
@@ -40,10 +40,10 @@ class UserContactsScreen extends React.PureComponent {
         <PermissionsBox />
         <UserContactsList
           userContacts={userContacts}
-          filterByContactDispatched={filterByContactDispatched}
+          filterByContact={filterByContact}
           isLoading={isLoading}
-          loadMoreUserContactsDispatched={loadMoreUserContactsDispatched}
-          onRefresh={onRefreshDispatched}/>
+          loadMoreUserContacts={loadMoreUserContacts}
+          onRefresh={onRefresh}/>
       </Container>
     );
   }
@@ -59,10 +59,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadMoreUserContactsDispatched: () => dispatch(loadMoreUserContacts()),
-    onRefreshDispatched: () => dispatch(getAll()),
-    filterByContactDispatched: (name) => dispatch(filterByContact(name)),
-    updateQueryDispatched: (query) => dispatch(updateQuery(query))
+    loadMoreUserContacts: () => dispatch(loadMoreUserContacts()),
+    onRefresh: () => dispatch(getAll()),
+    filterByContact: (name) => dispatch(filterByContact(name)),
+    updateQuery: (query) => dispatch(updateQuery(query))
   };
 }
 

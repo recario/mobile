@@ -60,7 +60,7 @@ export default class API {
   }
 
   static getAdFriends(id) {
-    return apiService.get(`/v1/friendly_ads/${id}`);
+    return apiService.get(`/v2/friendly_ads/${id}`);
   }
 
   static signIn(phone, code) {
@@ -137,5 +137,25 @@ export default class API {
 
   static unlikeAd(adId) {
     return apiService.delete(`/v1/favorite_ads/${adId}`);
+  }
+
+  static getChatRooms(offset=0) {
+    return apiService.get(`/v1/chat_rooms?offset=${offset}`);
+  }
+
+  static initiateChatRoom(adId, userId, name) {
+    return apiService.post('/v1/chat_rooms', { ad_id: adId, user_id: userId, name: name });
+  }
+
+  static addUserToChat(chatRoomId, userId, name) {
+    return apiService.post('/v1/chat_room_users', { chat_room_id: chatRoomId, user_id: userId, name: name });
+  }
+
+  static leaveChat(chatRoomId) {
+    return apiService.delete(`/v1/chat_room_users/${chatRoomId}`);
+  }
+
+  static getMessages(chatId, offset) {
+    return apiService.get(`/v1/messages?chat_id=${chatId}&offset=${offset}`)
   }
 }

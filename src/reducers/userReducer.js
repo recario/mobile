@@ -4,7 +4,8 @@ const initialState = {
   isLoading: false,
   name: '',
   avatar: '',
-  contactsProcessed: true
+  contactsProcessed: true,
+  unreadMessagesCount: 0
 }
 
 export default function userReducer(state = initialState, action = {}) {
@@ -22,6 +23,7 @@ export default function userReducer(state = initialState, action = {}) {
         avatar: action.user.avatar,
         phoneNumber: action.user.phone_number,
         userContactsCount: action.user.user_contacts_count,
+        unreadMessagesCount: action.user.unread_messages_count,
         isLoading: false
       }
     case ActionTypes.GET_PROFILE_FAILED:
@@ -44,6 +46,16 @@ export default function userReducer(state = initialState, action = {}) {
       return {
         ...state,
         contactsProcessed: true
+      }
+    case ActionTypes.SET_CURRENT_CHAT:
+      return {
+        ...state,
+        currentChatId: action.chatRoomId
+      }
+    case ActionTypes.UPDATE_UNREAD_MESSAGES_COUNT:
+      return {
+        ...state,
+        unreadMessagesCount: action.count,
       }
     default:
       return state;

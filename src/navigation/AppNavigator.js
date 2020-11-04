@@ -15,16 +15,24 @@ import MyAdsScreen from '../MyAds/MyAdsScreen';
 import VisitedAdsScreen from '../VisitedAds/VisitedAdsScreen';
 import FavoriteAdsScreen from '../FavoriteAds/FavoriteAdsScreen';
 
+import ChatRoomScreen from '../Chat/ChatRoomScreen';
+import ChatRoomSettingsScreen from '../Chat/ChatRoomSettingsScreen';
+import ChatRoomsListScreen from '../Chat/ChatRoomsListScreen';
+
 import StarredAdScreen from '../Starred/AdScreenContainer';
 
 import { darkColor, activeColor } from '../Colors';
 
+import ChatIcon from './ChatIcon';
+
 const styles = StyleSheet.create({
   activeIcon: {
-    fontSize: 24, color: activeColor
+    fontSize: 24,
+    color: activeColor
   },
   inactiveIcon: {
-    fontSize: 24, color: 'grey'
+    fontSize: 24,
+    color: 'grey'
   }
 });
 
@@ -35,6 +43,9 @@ function iconFor(iconName) {
 }
 
 const defaultNavigationOptions = {
+  cardStyle: {
+    backgroundColor: darkColor
+  }
 }
 
 const FeedNavigator = createStackNavigator(
@@ -47,6 +58,29 @@ const FeedNavigator = createStackNavigator(
     defaultNavigationOptions: defaultNavigationOptions
   },
 );
+
+const ChatStack = createStackNavigator(
+  {
+    ChatRoomsListScreen: { screen: ChatRoomsListScreen, path: '' },
+    ChatRoomSettingsScreen: { screen: ChatRoomSettingsScreen, path: '' },
+    ChatRoomScreen: { screen: ChatRoomScreen, path: 'chat/:id' },
+  },
+  {
+    initialRouteName: 'ChatRoomsListScreen',
+    defaultNavigationOptions: defaultNavigationOptions
+  }
+);
+
+ChatStack.navigationOptions = ({ navigation }) => {
+  let tabBarVisible = true;
+  if (navigation.state.index > 0) {
+    tabBarVisible = false;
+  }
+
+  return {
+    tabBarVisible,
+  };
+};
 
 const ProfileNavigator = createStackNavigator(
   {
@@ -108,6 +142,14 @@ const bottomTabsNavigator = createBottomTabNavigator(
         tabBarIcon: iconFor('star-outline')
       }
     },
+    Chat: {
+      screen: ChatStack,
+      path: '',
+      navigationOptions: {
+        title: 'Чат',
+        tabBarIcon: (props) => <ChatIcon {...props}/>
+      }
+    },
     UserContacts: {
       screen: UserContactsNavigator,
       path: 'user_contacts',
@@ -130,7 +172,6 @@ const bottomTabsNavigator = createBottomTabNavigator(
       style: {
         backgroundColor: darkColor,
         borderTopWidth: 0,
-        marginBottom: 12,
       },
       activeTintColor: activeColor,
       inactiveTintColor: 'grey'

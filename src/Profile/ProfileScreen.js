@@ -38,10 +38,10 @@ class ProfileScreen extends React.PureComponent {
     return({ header: () => null });
   }
 
-  handleNameChange = ({ nativeEvent: {text} }) => this.props.onUserNameChangedDispatched(text)
+  handleNameChange = ({ nativeEvent: {text} }) => this.props.onUserNameChanged(text)
 
   handleAvatarChange = () => {
-    const { onUserAvatarChangedDispatched } = this.props;
+    const { onUserAvatarChanged } = this.props;
     const options = {
       width: 256,
       height: 256,
@@ -55,12 +55,12 @@ class ProfileScreen extends React.PureComponent {
 
     ImagePicker.openPicker(options).then(image => {
       const source = `data:${image.mime};base64,${image.data}`;
-      onUserAvatarChangedDispatched(source);
+      onUserAvatarChanged(source);
     });
   }
 
   onAvatarPress = () => {
-    const avatarPresent = this.props.userAvatar && this.props.userAvatar.length > 0;
+    const avatarPresent = this.props.user.avatar && this.props.user.avatar.length > 0;
 
     ActionSheet.show(
       {
@@ -78,14 +78,14 @@ class ProfileScreen extends React.PureComponent {
   }
 
   handleAvatarRemove = () => {
-    const { onUserAvatarChangedDispatched } = this.props;
+    const { onUserAvatarChanged } = this.props;
 
-    onUserAvatarChangedDispatched('');
+    onUserAvatarChanged('');
   }
 
   render() {
-    const { onSignOutDispatched, deleteContactsDispatched, userName, userAvatar, phoneNumber, onRefreshDispatched } = this.props;
-    const refreshControl = <RefreshControl refreshing={false} tintColor={activeColor} onRefresh={onRefreshDispatched} />;
+    const { onSignOut, deleteContacts, onRefresh, user } = this.props;
+    const refreshControl = <RefreshControl refreshing={false} tintColor={activeColor} onRefresh={onRefresh} />;
 
     return (
       <Container>
@@ -95,20 +95,20 @@ class ProfileScreen extends React.PureComponent {
               <ListItem noBorder>
                 <Body style={styles.avatarContainer}>
                   <TouchableOpacity onPress={this.onAvatarPress}>
-                    {userAvatar ? <Thumbnail source={{ uri: userAvatar }} /> : <Image style={styles.noAvatar} source={require('../assets/default_avatar.png')} />}
+                    {user.avatar ? <Thumbnail source={{ uri: user.avatar }} /> : <Image style={styles.noAvatar} source={require('../assets/default_avatar.png')} />}
                   </TouchableOpacity>
-                  <Text style={styles.phoneNumberText}>{phoneNumber}</Text>
+                  <Text style={styles.phoneNumberText}>{user.phoneNumber}</Text>
                 </Body>
               </ListItem>
               <ListItem noIndent>
                 <Left>
-                  <Input textAlign='center' placeholder='Имя' defaultValue={userName} onEndEditing={this.handleNameChange} />
+                  <Input textAlign='center' placeholder='Имя' defaultValue={user.name} onEndEditing={this.handleNameChange} />
                 </Left>
               </ListItem>
             </List>
 
             <List>
-              <ListItem style={styles.itemContainer} noIndent onPress={deleteContactsDispatched} activeOpacity={1} underlayColor='transparent'>
+              <ListItem style={styles.itemContainer} noIndent onPress={deleteContacts} activeOpacity={1} underlayColor='transparent'>
                 <Left><Text>Книга контактов</Text></Left>
                 <Right><Text style={styles.activeColor}>Удалить</Text></Right>
               </ListItem>
@@ -131,7 +131,7 @@ class ProfileScreen extends React.PureComponent {
                   <Icon name='open-outline' />
                 </Right>
               </ListItem>
-              <ListItem noIndent onPress={onSignOutDispatched} activeOpacity={1} underlayColor='transparent'>
+              <ListItem noIndent onPress={onSignOut} activeOpacity={1} underlayColor='transparent'>
                 <Left><Text style={styles.activeColor}>Выход</Text></Left>
                 <Right>
                   <Icon name='log-out-outline' style={styles.activeColor} />
@@ -147,19 +147,18 @@ class ProfileScreen extends React.PureComponent {
 
 function mapStateToProps(state) {
   return {
-    userName: state.user.name,
-    userAvatar: state.user.avatar,
-    phoneNumber: state.user.phoneNumber
+    user: state.user,
+
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    onUserNameChangedDispatched: (name) => dispatch(updateUserName(name)),
-    onUserAvatarChangedDispatched: (base64ImageData) => dispatch(updateUserAvatar(base64ImageData)),
-    onSignOutDispatched: () => dispatch(signOut(false)),
-    deleteContactsDispatched: () => dispatch(deleteContacts()),
-    onRefreshDispatched: () => dispatch(getProfile())
+    onUserNameChanged: (name) => dispatch(updateUserName(name)),
+    onUserAvatarChanged: (base64ImageData) => dispatch(updateUserAvatar(base64ImageData)),
+    onSignOut: () => dispatch(signOut(false)),
+    deleteContacts: () => dispatch(deleteContacts()),
+    onRefresh: () => dispatch(getProfile())
   };
 }
 

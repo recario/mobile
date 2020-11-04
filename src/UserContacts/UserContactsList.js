@@ -13,7 +13,7 @@ class UserContactsList extends React.PureComponent {
   _keyExtractor = item => item.id.toString();
 
   _onEndReached = async () => {
-    this.props.loadMoreUserContactsDispatched();
+    this.props.loadMoreUserContacts();
   }
 
   invitationalSMS = phoneNumber => {
@@ -27,7 +27,7 @@ class UserContactsList extends React.PureComponent {
   // https://github.com/facebook/react-native/issues/26610
   flatListBugFix = { right: 1 }
 
-  _renderItem = ({ item, index }) => <UserContactsListItem invitationalSMS={this.invitationalSMS} contact={item} filterByContactDispatched={this.props.filterByContactDispatched} />;
+  _renderItem = ({ item, index }) => <UserContactsListItem invitationalSMS={this.invitationalSMS} contact={item} filterByContact={this.props.filterByContact} />;
 
   onRefresh = this.props.onRefresh
   refreshControlLoading = <RefreshControl refreshing={true} tintColor={activeColor} onRefresh={this.onRefresh} />
@@ -35,7 +35,7 @@ class UserContactsList extends React.PureComponent {
 
 
   render() {
-    const { userContacts, isLoading, onRefresh, filterByContactDispatched } = this.props;
+    const { userContacts, isLoading, onRefresh, filterByContact } = this.props;
     const refreshControl = isLoading ? this.refreshControlLoading : this.refreshControlStable;
 
     if (userContacts.length === 0) {

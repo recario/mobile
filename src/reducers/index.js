@@ -11,6 +11,8 @@ import userContactsReducer from './userContactsReducer';
 import filtersReducer from './filtersReducer';
 import filtersValuesReducer from './filtersValuesReducer';
 import starredAdReducer from './starredAdReducer';
+import chatsReducer from './chatsReducer';
+import currentChatReducer from './currentChatReducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -25,6 +27,8 @@ const rootReducer = combineReducers({
   filters: filtersReducer,
   filtersValues: filtersValuesReducer,
   starredAd: starredAdReducer,
+  chats: chatsReducer,
+  currentChat: currentChatReducer
 });
 
 export default rootReducer;

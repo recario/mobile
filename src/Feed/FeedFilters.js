@@ -34,10 +34,10 @@ import { applyFilter, resetFilters } from './feedActions';
 
 import { activeColor, darkColor, mainColor, trackColor } from '../Colors';
 
-const FeedFilters = ({ filters, filtersValues, applyFilterDispatched, filterResetDispatched, modalVisible, switchModalVisibleDispatched }) => {
+const FeedFilters = ({ filters, filtersValues, applyFilter, filterReset, modalVisible, switchModalVisible }) => {
   let typingTimer;
 
-  const filterQueryResetDispatched = useCallback(() => applyFilterDispatched('query', ''), []);
+  const filterQueryReset = useCallback(() => applyFilter('query', ''), []);
 
   const filterBox = (filterValue, filterType) => {
     const isActive = filters[filterType].filter(f => f === filterValue).length;
@@ -45,7 +45,7 @@ const FeedFilters = ({ filters, filtersValues, applyFilterDispatched, filterRese
     const iconName = (filters[filterType].filter(f => f === filterValue)).length ? 'checkmark-circle-outline' : 'ellipse-outline'
 
     return <View key={filterValue} style={isActive ? styles.activeFilterBox : styles.filterBox}>
-      <Text onPress={() => applyFilterDispatched(filterType, filterValue)}>
+      <Text onPress={() => applyFilter(filterType, filterValue)}>
         {filterValue}
         &nbsp;
         <Icon name={iconName} style={styles.filterItem} />
@@ -62,13 +62,13 @@ const FeedFilters = ({ filters, filtersValues, applyFilterDispatched, filterRese
 
   const onChangeQueryWithDelay = (text) => {
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => applyFilterDispatched('query', text), 200);
+    typingTimer = setTimeout(() => applyFilter('query', text), 200);
   }
 
   const onContactsModeChange = () => {
     const valueToSet = filters.contacts_mode == 'directFriends' ? '' : 'directFriends';
 
-    applyFilterDispatched('contacts_mode', valueToSet);
+    applyFilter('contacts_mode', valueToSet);
   }
 
   return (
@@ -77,7 +77,7 @@ const FeedFilters = ({ filters, filtersValues, applyFilterDispatched, filterRese
         <Item style={styles.searchBar}>
           <Icon name='ios-search' style={styles.searchIcon}/>
           <Input placeholder='Поиск' style={styles.inputTextColor} onChangeText={onChangeQueryWithDelay} defaultValue={filters.query}/>
-          {filters.query.length > 0 && <Icon name='close-circle' style={styles.inputTextColor} onPress={filterQueryResetDispatched} />}
+          {filters.query.length > 0 && <Icon name='close-circle' style={styles.inputTextColor} onPress={filterQueryReset} />}
         </Item>
 
       </Header>
@@ -88,8 +88,8 @@ const FeedFilters = ({ filters, filtersValues, applyFilterDispatched, filterRese
             <View style={styles.modalContainer}>
               <Content>
                 <View style={styles.modalControlsContainer}>
-                  <Icon name='close-outline' onPress={switchModalVisibleDispatched} style={styles.closeIcon}/>
-                  {filtersPresent && <Text onPress={filterResetDispatched} style={styles.resetIcon}>Сбросить</Text>}
+                  <Icon name='close-outline' onPress={switchModalVisible} style={styles.closeIcon}/>
+                  {filtersPresent && <Text onPress={filterReset} style={styles.resetIcon}>Сбросить</Text>}
                 </View>
                 <Item style={styles.filtersHeader}>
                   <Left><H1>Фильтры</H1></Left>
@@ -100,22 +100,22 @@ const FeedFilters = ({ filters, filtersValues, applyFilterDispatched, filterRese
                  <View style={styles.rangeItemWrapper}>
                    <Item style={styles.rangeItem}>
                     <Label>от</Label>
-                    <Input keyboardType='numeric' defaultValue={filters.min_price.toString()} onEndEditing={(event) => applyFilterDispatched('min_price', event.nativeEvent.text)}/>
+                    <Input keyboardType='numeric' defaultValue={filters.min_price.toString()} onEndEditing={(event) => applyFilter('min_price', event.nativeEvent.text)}/>
                    </Item>
                    <Item style={styles.rangeItem}>
                     <Label>до</Label>
-                    <Input keyboardType='numeric' defaultValue={filters.max_price.toString()} onEndEditing={(event) => applyFilterDispatched('max_price', event.nativeEvent.text)}/>
+                    <Input keyboardType='numeric' defaultValue={filters.max_price.toString()} onEndEditing={(event) => applyFilter('max_price', event.nativeEvent.text)}/>
                    </Item>
                   </View>
                   <H2 style={styles.filterTitle}>Год</H2>
                   <View style={styles.rangeItemWrapper}>
                     <Item style={styles.rangeItem}>
                       <Label>от</Label>
-                      <Input keyboardType='numeric' defaultValue={filters.min_year.toString()} onEndEditing={(event) => applyFilterDispatched('min_year', event.nativeEvent.text)}/>
+                      <Input keyboardType='numeric' defaultValue={filters.min_year.toString()} onEndEditing={(event) => applyFilter('min_year', event.nativeEvent.text)}/>
                     </Item>
                     <Item style={styles.rangeItem}>
                       <Label>до</Label>
-                      <Input keyboardType='numeric' defaultValue={filters.max_year.toString()} onEndEditing={(event) => applyFilterDispatched('max_year', event.nativeEvent.text)}/>
+                      <Input keyboardType='numeric' defaultValue={filters.max_year.toString()} onEndEditing={(event) => applyFilter('max_year', event.nativeEvent.text)}/>
                     </Item>
                   </View>
 
@@ -151,7 +151,7 @@ const FeedFilters = ({ filters, filtersValues, applyFilterDispatched, filterRese
             </View>
           </KeyboardAwareScrollView>
           <View style={styles.submitButtonWrapper} >
-            <Button block onPress={switchModalVisibleDispatched} style={styles.submitButton}><Text>Поиск</Text></Button>
+            <Button block onPress={switchModalVisible} style={styles.submitButton}><Text>Поиск</Text></Button>
           </View>
         </SafeAreaView>
       </Modal>
@@ -170,10 +170,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    switchModalVisibleDispatched: () => dispatch({type: ActionTypes.FILTER_MODAL_SWITCH_VISIBILITY}),
-    filterResetDispatched: () => dispatch(resetFilters()),
-    filterQueryResetDispatched: () => dispatch(resetFilters()),
-    applyFilterDispatched: (filterKey, filterValue) => dispatch(applyFilter(filterKey, filterValue))
+    switchModalVisible: () => dispatch({type: ActionTypes.FILTER_MODAL_SWITCH_VISIBILITY}),
+    filterReset: () => dispatch(resetFilters()),
+    filterQueryReset: () => dispatch(resetFilters()),
+    applyFilter: (filterKey, filterValue) => dispatch(applyFilter(filterKey, filterValue))
   };
 }
 
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: darkColor,
     flex: 1,
-    padding: 16
+    padding: 16,
   },
   modalControlsContainer: {
     flexDirection: 'row',

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Container, Fab, Icon } from 'native-base';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import AdsList from '../AdsList';
 
@@ -21,12 +21,12 @@ class FeedScreen extends React.PureComponent {
   }
 
   onAdOpened = (ad) => {
-    const { navigation, loadAdDispatched } = this.props;
+    const { navigation, loadAd } = this.props;
     navigation.push('Ad', { id: ad.id });
   }
 
   render() {
-    const { ads, loadMoreAdsDispatched, filters, isLoading, onRefreshDispatched, switchModalVisibleDispatched } = this.props;
+    const { ads, loadMoreAds, filters, isLoading, onRefresh, switchModalVisible } = this.props;
     const filtersPresent = Object.values(filters).filter(f => f.length > 0).length > 0;
 
     return (
@@ -35,10 +35,10 @@ class FeedScreen extends React.PureComponent {
         <PermissionsBox />
         <AdsList ads={ads}
                  isLoading={isLoading}
-                 onRefresh={onRefreshDispatched}
-                 loadMoreAdsDispatched={loadMoreAdsDispatched}
+                 onRefresh={onRefresh}
+                 loadMoreAds={loadMoreAds}
                  onAdOpened={this.onAdOpened}/>
-        <Fab direction="left" active={true} position="bottomRight" onPress={switchModalVisibleDispatched} style={styles.fabContainer}>
+        <Fab direction="left" active={true} position="bottomRight" onPress={switchModalVisible} style={styles.fabContainer}>
           <Icon name={filtersPresent ? 'funnel' : 'funnel-outline'} style={styles.fabIcon} />
         </Fab>
       </Container>
@@ -56,10 +56,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadMoreAdsDispatched: () => dispatch(loadMoreAds()),
-    loadAdDispatched: (id) => dispatch(loadAd(id)),
-    onRefreshDispatched: () => dispatch(getAll()),
-    switchModalVisibleDispatched: () => dispatch({type: ActionTypes.FILTER_MODAL_SWITCH_VISIBILITY}),
+    loadMoreAds: () => dispatch(loadMoreAds()),
+    loadAd: (id) => dispatch(loadAd(id)),
+    onRefresh: () => dispatch(getAll()),
+    switchModalVisible: () => dispatch({type: ActionTypes.FILTER_MODAL_SWITCH_VISIBILITY}),
 
   };
 }

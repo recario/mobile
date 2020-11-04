@@ -14,37 +14,37 @@ class AdScreenContainer extends React.PureComponent {
   };
 
   onRefresh = () => {
-    const { ad, navigation, loadAdDispatched } = this.props;
+    const { ad, navigation, loadAd } = this.props;
 
-    loadAdDispatched(ad.id);
+    loadAd(ad.id);
   };
 
   componentDidMount() {
-    const { ad, loadAdDispatched, isLoading, navigation } = this.props;
+    const { ad, loadAd, isLoading, navigation } = this.props;
 
     if (isLoading) return;
 
     if (parseInt(ad.id) == parseInt(navigation.state.params.id)) return;
 
-    loadAdDispatched(navigation.state.params.id);
+    loadAd(navigation.state.params.id);
   }
 
   componentDidUpdate() {
-    const { ad, loadAdDispatched, isLoading, navigation } = this.props;
+    const { ad, loadAd, isLoading, navigation } = this.props;
 
     if (isLoading) return;
 
     if (parseInt(ad.id) == parseInt(navigation.state.params.id)) return;
 
-    loadAdDispatched(navigation.state.params.id);
+    loadAd(navigation.state.params.id);
   }
 
   render () {
-    const { ad, currentAdFriends, askFriendsIsLoading, isLoading, loadAdDispatched, likeAdDispatched, unlikeAdDispatched } = this.props;
+    const { ad, currentAdFriends, askFriendsIsLoading, isLoading, loadAd, likeAd, unlikeAd } = this.props;
 
     return <AdScreen ad={ad}
-                     likeAdDispatched={likeAdDispatched}
-                     unlikeAdDispatched={unlikeAdDispatched}
+                     likeAd={likeAd}
+                     unlikeAd={unlikeAd}
                      currentAdFriends={currentAdFriends}
                      askFriendsIsLoading={askFriendsIsLoading}
                      isLoading={isLoading}
@@ -63,9 +63,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadAdDispatched: (id) => dispatch(loadAdToStarred(id)),
-    likeAdDispatched: (adId) => dispatch(likeAd(adId)),
-    unlikeAdDispatched: (adId) => dispatch(unlikeAd(adId))
+    loadAd: (id) => dispatch(loadAdToStarred(id)),
+    likeAd: (adId) => dispatch(likeAd(adId)),
+    unlikeAd: (adId) => dispatch(unlikeAd(adId))
   };
 }
 
