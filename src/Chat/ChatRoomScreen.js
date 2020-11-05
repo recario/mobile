@@ -18,7 +18,7 @@ import {
   ActionSheet,
 } from 'native-base';
 
-import { SET_CURRENT_CHAT } from '../actions/actionTypes';
+import { SET_CURRENT_CHAT, RESET_CURRENT_CHAT } from '../actions/actionTypes';
 import { postMessage, getMessages, deleteMessage } from '../Chat/chatActions';
 import { activeColor, darkColor, mainColor, lightColor } from '../Colors';
 import { decOfNum } from '../Utils';
@@ -26,7 +26,7 @@ import { serverChannel } from '../services/ServerChannel';
 
 import ru from 'dayjs/locale/ru';
 
-function ChatRoomScreen({ user, chat, messages, onSend, onDelete, navigation, getMessages, setCurrentChat, removeCurrentChat }) {
+function ChatRoomScreen({ user, chat, currentChat, onSend, onDelete, navigation, getMessages, setCurrentChat, removeCurrentChat, resetCurrentChat }) {
   if (!chat?.id) { return <SpinnerScreen /> }
 
   useEffect( () => {
@@ -40,6 +40,7 @@ function ChatRoomScreen({ user, chat, messages, onSend, onDelete, navigation, ge
   }, []);
 
   useEffect( () => {
+    resetCurrentChat();
     onConnect();
     AppState.addEventListener('change', appStateHandle);
     getMessages(chat);
@@ -81,10 +82,10 @@ function ChatRoomScreen({ user, chat, messages, onSend, onDelete, navigation, ge
   return (
     <Container style={styles.mainContainer}>
       <GiftedChat
-        messages={messages}
-        onLoadEarlier={() => getMessages(chat, chat.messages.length)}
+        messages={currentChat.messages}
+        onLoadEarlier={() => getMessages(chat, currentChat.messages.length)}
         infiniteScroll
-        loadEarlier={chat.synced && !chat.lastLoaded}
+        loadEarlier={!currentChat.lastLoaded}
         renderLoading={() => <SpinnerScreen />}
         renderLoadEarlier={(props) => <LoadEarlier label='Загрузить еще...' {...props}/>}
         onSend={(message) => onSend(message[0], chat)}
@@ -108,7 +109,7 @@ function mapStateToProps(state, ownProps) {
   return {
     chat: chat,
     user: state.user,
-    messages: state.currentChat.messages,
+    currentChat: state.currentChat,
   };
 }
 
@@ -118,7 +119,8 @@ function mapDispatchToProps(dispatch) {
     onDelete: (message) => dispatch(deleteMessage(message)),
     getMessages: (chat, offset) => dispatch(getMessages(chat, offset)),
     setCurrentChat: (chatRoomId) => dispatch({ type: SET_CURRENT_CHAT, chatRoomId: chatRoomId }),
-    removeCurrentChat: () => dispatch({ type: SET_CURRENT_CHAT, chatRoomId: undefined })
+    removeCurrentChat: () => dispatch({ type: SET_CURRENT_CHAT, chatRoomId: undefined }),
+    resetCurrentChat: () => dispatch({ type: RESET_CURRENT_CHAT }),
   };
 }
 

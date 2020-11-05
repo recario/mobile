@@ -5,7 +5,8 @@ import { mergeArraysKeepNew } from '../Utils';
 const initialState = {
   friends: [],
   isLoadingSettings: false,
-  messages: []
+  messages: [],
+  lastLoaded: false,
 }
 
 export default function currentChatReducer(state = initialState, action = {}) {
@@ -63,6 +64,7 @@ export default function currentChatReducer(state = initialState, action = {}) {
     case ActionTypes.SYNC_MESSAGES_SUCCESS:
       return {
         ...state,
+        lastLoaded: (action.chat.messages.length < 20),
         messages: mergeArraysKeepNew([...state.messages, ...action.chat.messages], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
       }
     case ActionTypes.MESSAGE_WAS_DELETED:
@@ -84,7 +86,11 @@ export default function currentChatReducer(state = initialState, action = {}) {
           messages: state.messages.map(m => m._id === action.message._id ? {...m, pending: true} : m)
         }
       }
-
+    case ActionTypes.RESET_CURRENT_CHAT:
+      return {
+        ...state,
+        messages: []
+      }
     default:
       return state;
   }

@@ -27,7 +27,7 @@ export default function chatsReducer(state = initialState, action = {}) {
     case ActionTypes.POST_MESSAGE:
       return {
         ...state,
-        list: newChatList(state.list, action.chat, false, true)
+        list: newChatList(state.list, action.chat)
       }
     case ActionTypes.POST_MESSAGE_SUCCESS:
       return {
@@ -50,7 +50,7 @@ export default function chatsReducer(state = initialState, action = {}) {
 
       return {
         ...state,
-        list: newChatList(state.list, chat, false, true)
+        list: newChatList(state.list, chat)
       }
     case ActionTypes.MESSAGE_WAS_DELETED:
       const ccc = state.list.filter(c => c.id === action.chat_room_id)[0];
@@ -66,24 +66,6 @@ export default function chatsReducer(state = initialState, action = {}) {
   }
 }
 
-// TODO: better params naming
-function newChatList(oldChatList, newChat, s = false, p = false, maybeLastMessages = false) {
-  const oldChat = oldChatList.filter(c => c.id === newChat.id)[0] || { messages: [] };
-  const updatedChat = {
-    ...newChat,
-    lastLoaded: oldChat.lastLoaded || (maybeLastMessages && newChat.messages.length < 20),
-    synced: s || oldChat.synced,
-    messages: mergeArraysKeepNew([
-      ...newChat.messages,
-      ...oldChat.messages.map(m => {
-        m.pending = p ? (m.pending || false) : false;
-        return m;
-      })
-      ], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
-  }
-
-  const updatedOldChatList = oldChatList.map(c => c.id === newChat.id ? updatedChat : c);
-  const result = mergeArraysKeepNew([newChat, ...updatedOldChatList], it => it.id);
-
-  return result.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at))
+function newChatList(oldChatList, newChat) {
+  return mergeArraysKeepNew([...oldChatList, newChat], it => it.id).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at))
 }
