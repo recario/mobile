@@ -14,22 +14,28 @@ if (process.env.NODE_ENV === 'production') {
   baseURL = 'ws://192.168.0.100:3000/cable';
 }
 
+let cachedToken;
+
 class ServerChannel {
   constructor(callbacks) {
     this.callbacks = callbacks;
   }
 
   authenticate(accessToken) {
+    cachedToken = accessToken;
     this.cable = this.cable || createConsumer(`${baseURL}?access_token=${accessToken}`);
+    return this.cable;
   }
 
   connectToUsersChannel(callbacks) {
+    //this.cable = this.cable || this.authenticate(cachedToken);
     this.usersChannel = this.usersChannel || this.cable.subscriptions.create('ApplicationCable::UserChannel', {
       received: (data) => this.processMessage(data, callbacks),
     });
   }
 
   connectToChatRoomChannel(chatRoomId) {
+    this.cable = this.cable || this.authenticate(cachedToken);
     this.chatRoomChannel = this.chatRoomChannel || this.cable.subscriptions.create({ channel: 'ApplicationCable::ChatRoomChannel', chat_room_id: chatRoomId }, {
       received: (data) => console.warn(data),
       subscribed: (data) => console.warn(data)

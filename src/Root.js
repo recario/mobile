@@ -25,7 +25,7 @@ import { getAll as getMyAds } from './MyAds/myAdsActions';
 import { getAll as getVisitedAds } from './VisitedAds/visitedAdsActions';
 import { getAll as getFavoriteAds } from './FavoriteAds/favoriteAdsActions';
 import { getProfile } from './Profile/profileActions';
-import { getChatRooms, newMessage, readUpdate, deleteMessageFinished } from './Chat/chatActions';
+import { getChatRooms, newMessage, readUpdate, deleteMessageFinished, updateUnread } from './Chat/chatActions';
 
 import { activeColor } from './Colors';
 
@@ -68,6 +68,7 @@ class Root extends React.Component {
       tryUpdateContacts,
       updateFilterValues,
       getChatRooms,
+      getProfile,
       newMessage
     } = this.props;
 
@@ -90,6 +91,7 @@ class Root extends React.Component {
     updateFilterValues();
     getChatRooms();
     tryUpdateContacts();
+    getProfile();
   };
 
   async componentDidMount() {
@@ -193,7 +195,7 @@ function mapDispatchToProps(dispatch) {
     updateContactsFinished: () => dispatch({ type: ActionTypes.UPDATE_CONTACTS_FINISHED }),
     newMessage: (chat, myMessage) => dispatch(newMessage(chat, myMessage)),
     readUpdate: (chat) => dispatch(readUpdate(chat)),
-    updateUnreadMessagesCount: (count) => dispatch({ type: ActionTypes.UPDATE_UNREAD_MESSAGES_COUNT, count: count }),
+    updateUnreadMessagesCount: (count) => dispatch(updateUnread(count)),
     deleteMessage: (id, chat_room_id, updated_at) => dispatch(deleteMessageFinished(id, chat_room_id, updated_at)),
   };
 }

@@ -1,3 +1,4 @@
+import PushNotification from 'react-native-push-notification';
 import * as ActionTypes from '../actions/actionTypes.js';
 import API from '../services/API';
 import { displayError } from '../actions/errorsActions';
@@ -7,6 +8,7 @@ export function getProfile () {
     dispatch({ type: ActionTypes.GET_PROFILE_STARTED });
     return API.getProfile()
       .then(payload => {
+        PushNotification.setApplicationIconBadgeNumber(payload.data.unread_messages_count);
         dispatch({ type: ActionTypes.GET_PROFILE_SUCCESS, user: payload.data });
       })
       .catch(error => {

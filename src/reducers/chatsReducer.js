@@ -61,6 +61,11 @@ export default function chatsReducer(state = initialState, action = {}) {
         ...state,
         list: newChatList(state.list, ccc)
       }
+    case ActionTypes.SYNC_MESSAGES_SUCCESS:
+      return {
+        ...state,
+        list: newChatList(state.list, action.chat)
+      }
     default:
       return state
   }

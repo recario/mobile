@@ -15,15 +15,12 @@ export function pushNotificationsSetup() {
 
     // (required) Called when a remote or local notification is opened or received
     onNotification: function(notification) {
+
       goNavigate = () => {
-        NavigationService.navigate('Ad', { id: notification.data.ad_id });
+        NavigationService.navigate('ChatRoomScreen', { chatId: notification.data.chat_room_id });
       };
 
       if (notification.foreground) {
-        UINotification.ref.show({
-          message: notification.data.header,
-          onPress: goNavigate,
-        });
       } else {
         goNavigate();
       }

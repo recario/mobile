@@ -1,3 +1,4 @@
+import PushNotification from 'react-native-push-notification';
 import * as ActionTypes from '../actions/actionTypes.js';
 import API from '../services/API';
 import { notification as UINotification } from '../Utils';
@@ -130,5 +131,12 @@ export function openFriendPrepare(friend) {
 export function closeFriendPrepare() {
   return (dispatch) => {
     dispatch({ type: ActionTypes.CLOSE_FRIEND_PREPARE });
+  }
+}
+
+export function updateUnread(count) {
+  return (dispatch) => {
+    PushNotification.setApplicationIconBadgeNumber(count);
+    dispatch({ type: ActionTypes.UPDATE_UNREAD_MESSAGES_COUNT, count: count });
   }
 }
