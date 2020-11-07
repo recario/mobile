@@ -91,7 +91,13 @@ export default function currentChatReducer(state = initialState, action = {}) {
         }
       }
     case ActionTypes.RESET_CURRENT_CHAT:
-      return initialState
+      return {
+        ...state,
+        messages: [],
+        chatMetaData: {
+          chat_room_users: []
+        }
+      }
     default:
       return state;
   }

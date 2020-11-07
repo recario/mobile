@@ -93,7 +93,7 @@ export function newMessage(chat, myMessage = false) {
     const currentUserId = getState().user._id;
     if (currentChatId === chat.id) {
       if (chat.messages[0].user._id !== currentUserId) {
-        serverChannel.chatRoomChannel.perform('read');
+        // serverChannel.chatRoomChannel.perform('read');
       }
     } else {
       if (!myMessage && chat.messages[0].user._id !== currentUserId) {
