@@ -63,3 +63,20 @@ export const clearAuthPhone = async () => {
     return false;
   }
 };
+
+export const getPushToken = async () => {
+  try {
+    return await AsyncStorage.getItem('@AsyncStorage:pushToken');
+  } catch (error) {
+    return false;
+  }
+}
+
+export const setPushToken = async (pushToken) => {
+  try {
+    // return await AsyncStorage.setItem('@AsyncStorage:pushToken', JSON.stringify({ token: pushToken.token, os: pushToken.os}));
+    return await AsyncStorage.setItem('@AsyncStorage:pushToken', JSON.stringify({ push_token: pushToken.token, os: pushToken.os}));
+  } catch (error) {
+    return false;
+  }
+}

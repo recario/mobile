@@ -5,8 +5,6 @@ import { AppState } from 'react-native';
 
 import { Container, Content, Spinner } from 'native-base';
 
-import PushNotification from 'react-native-push-notification';
-
 import NavigationService from './services/NavigationService';
 
 import AppNavigator from './navigation/AppNavigator';
@@ -15,21 +13,20 @@ import WizardNavigator from './navigation/WizardNavigator';
 
 import * as ActionTypes from './actions/actionTypes';
 
-import { pushNotificationsSetup } from './actions/pushNotificationsActions';
 import { setWizardDone } from './actions/sessionsActions';
 import { tryUpdateContacts } from './actions/userContactsActions';
-import { checkPermissions } from './actions/pushNotificationsActions';
 import { getAll as getUserContacts } from './UserContacts/userContactsActions';
 import { getAll as getFeed, updateFilterValues } from './Feed/feedActions';
 import { getAll as getMyAds } from './MyAds/myAdsActions';
 import { getAll as getVisitedAds } from './VisitedAds/visitedAdsActions';
 import { getAll as getFavoriteAds } from './FavoriteAds/favoriteAdsActions';
 import { getProfile } from './Profile/profileActions';
+
 import { getChatRooms, newMessage, readUpdate, deleteMessageFinished, updateUnread } from './Chat/chatActions';
 
 import { activeColor } from './Colors';
 
-import { getAccessToken, getWizardDone } from './AsyncStorage';
+import { getAccessToken, getWizardDone, getPushToken } from './AsyncStorage';
 
 import API from './services/API';
 import { serverChannel } from './services/ServerChannel';
@@ -81,12 +78,6 @@ class Root extends React.Component {
 
     serverChannel.authenticate(accessToken);
     serverChannel.connectToUsersChannel(this.userChannelCallbacks);
-
-    PushNotification.checkPermissions(permissions => {
-      if (permissions.alert || permissions.badge || permissions.sound) {
-        pushNotificationsSetup();
-      }
-    });
 
     updateFilterValues();
     getChatRooms();
@@ -154,6 +145,9 @@ class Root extends React.Component {
     if (accessToken) {
       this.refreshApp();
 
+      getPushToken().then(pushToken => {
+        API.updateProfile({}, JSON.parse(pushToken));
+      })
       getChatRooms();
       getFeed();
       getContacts();
