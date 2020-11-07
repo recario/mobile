@@ -7,6 +7,9 @@ const initialState = {
   isLoadingSettings: false,
   messages: [],
   lastLoaded: false,
+  chatMetaData: {
+    chat_room_users: []
+  }
 }
 
 export default function currentChatReducer(state = initialState, action = {}) {
@@ -54,7 +57,7 @@ export default function currentChatReducer(state = initialState, action = {}) {
     case ActionTypes.POST_MESSAGE:
       return {
         ...state,
-        messages: mergeArraysKeepNew([...state.messages, ...action.chat.messages], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+        messages: mergeArraysKeepNew([...state.messages, action.message], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
       }
     case ActionTypes.POST_MESSAGE_SUCCESS:
       return {
@@ -64,8 +67,9 @@ export default function currentChatReducer(state = initialState, action = {}) {
     case ActionTypes.SYNC_MESSAGES_SUCCESS:
       return {
         ...state,
-        lastLoaded: (action.chat.messages.length < 20),
-        messages: mergeArraysKeepNew([...state.messages, ...action.chat.messages], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
+        lastLoaded: (action.messages.length < 20),
+        chatMetaData: action.chat,
+        messages: mergeArraysKeepNew([...state.messages, ...action.messages], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
       }
     case ActionTypes.MESSAGE_WAS_DELETED:
       if (state.id !== action.chat_room_id) {
@@ -87,10 +91,7 @@ export default function currentChatReducer(state = initialState, action = {}) {
         }
       }
     case ActionTypes.RESET_CURRENT_CHAT:
-      return {
-        ...state,
-        messages: []
-      }
+      return initialState
     default:
       return state;
   }

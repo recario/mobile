@@ -24,11 +24,6 @@ export default function chatsReducer(state = initialState, action = {}) {
         list: (equal(state.list, newList) ? state.list : newList),
         isLoading: false
       };
-    case ActionTypes.POST_MESSAGE:
-      return {
-        ...state,
-        list: newChatList(state.list, action.chat)
-      }
     case ActionTypes.POST_MESSAGE_SUCCESS:
       return {
         ...state,

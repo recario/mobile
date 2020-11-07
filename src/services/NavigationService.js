@@ -16,6 +16,15 @@ function navigate(routeName, params) {
   );
 }
 
+function push(routeName, params) {
+  _navigator.dispatch(
+    StackActions.push({
+      routeName,
+      params,
+    })
+  );
+}
+
 function popToTop() {
   _navigator.dispatch(StackActions.popToTop());
 }
@@ -23,5 +32,6 @@ function popToTop() {
 export default {
   navigate,
   popToTop,
+  push,
   setTopLevelNavigator,
 };

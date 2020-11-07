@@ -1,4 +1,6 @@
 import PushNotification from 'react-native-push-notification';
+import { Clipboard } from 'react-native';
+import { ActionSheet } from 'native-base';
 import * as ActionTypes from '../actions/actionTypes.js';
 import API from '../services/API';
 import { notification as UINotification } from '../Utils';
@@ -18,22 +20,22 @@ export function getChatRooms(offset=0) {
   }
 }
 
-export function postMessage(message, chat) {
-  message.pending = true;
-  message.chat_id = chat.id;
-  chat.messages = [message, ...chat.messages];
-
+export function postMessage(message, chatId) {
   return function(dispatch) {
-    dispatch({ type: ActionTypes.POST_MESSAGE, chat: chat });
-    serverChannel.chatRoomChannel.send({ message: message });
+    message.pending = true;
+    message.chat_id = chatId;
+    // chat.messages = [message, ...chat.messages];
+
+    dispatch({ type: ActionTypes.POST_MESSAGE, chatId: chatId, message: message });
+    serverChannel.chatRoomChannel.send({ message });
   }
 }
 
-export function getMessages(chat, offset=0) {
+export function getMessages(chatId, offset=0) {
   return function(dispatch) {
     // dispatch({ type: ActionTypes.SYNC_MESSAGES_STARTED, chat: chat });
-    API.getMessages(chat.id, offset).then(payload => {
-      dispatch({ type: ActionTypes.SYNC_MESSAGES_SUCCESS, chat: payload.data });
+    API.getMessages(chatId, offset).then(({ data }) => {
+      dispatch({ type: ActionTypes.SYNC_MESSAGES_SUCCESS, chat: data.chat, messages: data.messages });
     });
   }
 }
@@ -139,4 +141,22 @@ export function updateUnread(count) {
     PushNotification.setApplicationIconBadgeNumber(count);
     dispatch({ type: ActionTypes.UPDATE_UNREAD_MESSAGES_COUNT, count: count });
   }
+}
+
+
+export function onMessageLongPress(user, message, onDelete) {
+  const actions = [{ title: 'Скопировать текст', callback: () => Clipboard.setString(message.text)}];
+  let destructiveButtonIndex = null;
+  if (user._id === message.user._id) {
+    actions.push({title: 'Удалить сообщение', callback: onDelete});
+    destructiveButtonIndex = 1;
+  }
+
+  const actionSheetOptions = {
+    options: [...actions.map(a => a.title), 'Отменить'],
+    cancelButtonIndex: (actions.length + 1),
+    destructiveButtonIndex: destructiveButtonIndex,
+  };
+
+  return ActionSheet.show(actionSheetOptions, (buttonIndex) => actions[buttonIndex]?.callback(message))
 }

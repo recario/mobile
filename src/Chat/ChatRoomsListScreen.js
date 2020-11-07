@@ -13,7 +13,7 @@ import { getChatRooms } from './chatActions';
 import ListNotFound from '../ListNotFound';
 
 function ChatRoomsListScreen({ chats, isLoading, getChatRoomsWithOffset }) {
-  const keyExtractor = useCallback(item => item.id.toString(), []);
+  const keyExtractor = useCallback(item => item?.id?.toString(), []);
 
   const onEndReached = useCallback( () => {
     getChatRoomsWithOffset(chats.length);
