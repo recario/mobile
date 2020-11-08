@@ -43,7 +43,9 @@ export function getMessages(chatId, offset=0) {
 export function initiateChatRoom(adId, userId, name) {
   return function(dispatch) {
     NavigationService.navigate('ChatRoomScreen', { chat: {} });
-    API.initiateChatRoom(adId, userId, name).then(payload => {
+    API.initiateChatRoom(adId, userId, name).then(({ data }) => {
+      dispatch({ type: ActionTypes.GET_AD_FRIENDS_SUCCESS, adFriends: data });
+      dispatch({ type: ActionTypes.GET_STARRED_AD_FRIENDS_SUCCESS, adFriends: data });
     });
   }
 }
