@@ -24,7 +24,5 @@ export default function () {
         }
       }
     },
-
-    senderID: '560444610829',
   });
 }
