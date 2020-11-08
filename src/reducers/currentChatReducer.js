@@ -60,6 +60,9 @@ export default function currentChatReducer(state = initialState, action = {}) {
         messages: mergeArraysKeepNew([...state.messages, action.message], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
       }
     case ActionTypes.POST_MESSAGE_SUCCESS:
+      if (action.chat.id !== state.id) {
+        return state;
+      }
       return {
         ...state,
         messages: mergeArraysKeepNew([...state.messages, ...action.chat.messages], it => it._id).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
